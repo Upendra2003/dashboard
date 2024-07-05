@@ -198,8 +198,8 @@ def append_to_csv(df, csv_file):
         print(f"{csv_file} created with initial data.")
 
 if __name__ == "__main__":
-    username = 'upendra.10'
-    password = 'Uppu@101128'
+    username = '*********'
+    password = '*********'
 
     driver = login_to_threads(username, password)
 
