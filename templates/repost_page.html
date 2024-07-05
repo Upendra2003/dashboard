@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<link rel="stylesheet" href="static/css/likes_page.css">
+<body>
+    <div class="section">
+        <h1>Analysis of Reposts using Histograms and Box Plots of Reposts</h1>
+        <div class="info">
+            <p>The mean of the filtered as well as the orignal reposts are below calculated and displayed :
+            <span id="average-filtered-likes"></span>
+            <span id="average-original-likes"></span>
+                In this visual exploration, we delve into the world of reposts on social media platforms. Reposts are a measure of engagement, reflecting how users interact with content.
+                The histograms reveal the distribution of filtered and original reposts. Each bar represents a range of reposts, showing how frequently different levels of engagement occur.
+            </p>
+        </div>
+        <div class="plots-container">
+            <div id='original-histogram-div' class="plot"></div>
+            <div id='filtered-histogram-div' class="plot"></div>
+            <div class="info">
+                <p> Meanwhile, the box plots provide a deeper look into the spread and outliers within the data. They highlight the median (middle line), quartiles (box edges), and any potential outliers (data points outside the whiskers). <br>
+                    <br>
+                    The box plot for reposts reveals a generally consistent engagement pattern, with most posts receiving between the lower and upper bounds of 3 and 795 reposts, respectively. These bounds were determined using the 5th and 95th percentiles, ensuring that extreme outliers are excluded. This range captures the majority of the data, providing a more accurate and meaningful representation of typical audience engagement levels.
+                </p>
+            </div>
+            <div id='original-box-plot-div' class="plot"></div>
+            <div id='filtered-box-plot-div' class="plot"></div>
+        </div>
+        <div class="info">
+            <p>Upon analyzing the reposts received by various users, we observed that the majority of the posts receive reposts within a specific range, defined between the 5th and 95th percentiles. This range signifies the typical engagement level across our dataset, suggesting a consistent audience interaction for most news providers.
+            <br><br>
+            However, a subset of users consistently receive reposts below the 5th percentile, marking them as outliers in terms of engagement. These users are identified as unreliable based on their lower engagement metrics. This observation raises important considerations about their content's resonance with the audience, prompting a need to reassess content strategies or address potential issues affecting these specific users.
+            </p>
+        </div>
+        <div class="plot">
+            <div id="scatter-plot-div"></div>
+        </div>
+        <div class="news-providers">
+            <p>
+                Based on the research, the unreliable news providers identified are:
+            </p>
+            <ul class="unreliable-list">
+                <li>● washingtonpost</li>
+                <li>● judicialwatch</li>
+                <li>● dailymail</li>
+                <li>● reuters</li>
+                <li>● wsj</li>
+                <li>● npr</li>
+                <li>● who</li>
+                <li>● usatoday</li>
+                <li>● apnews</li>
+                <li>● msnbc</li>
+                <li>● time</li>
+            </ul>
+            <p>
+                Conversely, the list of reliable news providers includes:
+            </p>
+            <ul class="reliable-list">
+                <li>● nypost</li>
+                <li>● cnn</li>
+                <li>● nytimes</li>
+                <li>● foxnews</li>
+                <li>● who</li>
+                <li>● dailycaller</li>
+                <li>● independent</li>
+                <li>● newsweek</li>
+            </ul>
+        </div>
+        
+        
+    <script>
+        function calculateAverage(arr) {
+            if (arr.length === 0) return 0;
+            var sum = arr.reduce((acc, val) => acc + val, 0);
+            return sum / arr.length;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/analyze-repost')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Raw JSON response:', data); 
+
+                    var filtered_repost_data = data.filtered_repost_data;
+                    var original_repost_data = data.original_repost_data;
+                    var avgFilteredReposts = calculateAverage(filtered_repost_data);
+                    var avgOriginalReposts = calculateAverage(original_repost_data);
+
+                    document.getElementById('average-filtered-likes').innerHTML = `<p> ● The average Reposts of filtered posts are: ${avgFilteredReposts}</p>`;
+                    if (original_repost_data.length > 0) {
+                        document.getElementById('average-original-likes').innerHTML = `<p> ● The average Reposts of original posts are: ${avgOriginalReposts}</p>`;
+                    }
+
+                    var commonLayout = {
+                        margin: { t: 50, b: 50, l: 50, r: 50 },
+                        autosize: true,
+                        plot_bgcolor: '#000000',
+                        paper_bgcolor: '#000000',
+                        font: {
+                            color: '#FFFFFF'
+                        },
+                        xaxis: {
+                            color: '#FFFFFF',
+                            title: {
+                                font: {
+                                    color: '#FFFFFF'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            color: '#FFFFFF',
+                            title: {
+                                font: {
+                                    color: '#FFFFFF'
+                                }
+                            }
+                        }
+                    };
+
+                    // Plot for filtered likes data - Histogram
+                    var traceFilteredHistogram = {
+                        x: filtered_repost_data,
+                        type: 'histogram',
+                        marker: {
+                            color: '#FF6347' // Tomato color
+                        }
+                    };
+                    var layoutHistogram = {
+                        title: 'Filtered Reposts - Histogram',
+                        xaxis: { title: 'Reposts' },
+                        yaxis: { title: 'Frequency' },
+                        ...commonLayout
+                    };
+                    var dataHistogram = [traceFilteredHistogram];
+                    Plotly.newPlot('filtered-histogram-div', dataHistogram, layoutHistogram);
+
+                    // Plot for filtered likes data - Box Plot
+                    var traceFilteredBoxPlot = {
+                        y: filtered_repost_data,
+                        type: 'box',
+                        marker: {
+                            color: '#FFD700' // Gold color
+                        },
+                        line: {
+                            color: '#FFD700'
+                        }
+                    };
+                    var layoutBoxPlot = {
+                        title: 'Filtered Comments - Box Plot',
+                        yaxis: { title: 'Comments' },
+                        ...commonLayout
+                    };
+                    var dataBoxPlot = [traceFilteredBoxPlot];
+                    Plotly.newPlot('filtered-box-plot-div', dataBoxPlot, layoutBoxPlot);
+
+                    // Plot for original likes data (if available)
+                    if (original_repost_data.length > 0) {
+                        // Plot for original likes data - Histogram
+                        var traceOriginalHistogram = {
+                            x: original_repost_data,
+                            type: 'histogram',
+                            marker: {
+                                color: '#1E90FF' // Dodger Blue color
+                            }
+                        };
+                        var layoutOriginalHistogram = {
+                            title: 'Original Reposts - Histogram',
+                            xaxis: { title: 'Reposts' },
+                            yaxis: { title: 'Frequency' },
+                            ...commonLayout
+                        };
+                        var dataOriginalHistogram = [traceOriginalHistogram];
+                        Plotly.newPlot('original-histogram-div', dataOriginalHistogram, layoutOriginalHistogram);
+
+                        // Plot for original likes data - Box Plot
+                        var traceOriginalBoxPlot = {
+                            y: original_repost_data,
+                            type: 'box',
+                            marker: {
+                                color: '#32CD32' // Lime Green color
+                            },
+                            line: {
+                                color: '#32CD32'
+                            }
+                        };
+                        var layoutOriginalBoxPlot = {
+                            title: 'Original Reposts - Box Plot',
+                            yaxis: { title: 'Reposts' },
+                            ...commonLayout
+                        };
+                        var dataOriginalBoxPlot = [traceOriginalBoxPlot];
+                        Plotly.newPlot('original-box-plot-div', dataOriginalBoxPlot, layoutOriginalBoxPlot);
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/scatter-repost')
+                .then(response => response.json())
+                .then(data => {
+                    const scatterData = data.scatter_data;
+                    const lowerBound = data.lower_bound;
+                    const upperBound = data.upper_bound;
+                    console.log(scatterData)
+                    const usernames = scatterData.map(d => d.Username);
+                    const reposts = scatterData.map(d => d.Repost);
+                    const unreliable = scatterData.map(d => d.Unreliable);
+
+                    const traceUnreliable = {
+                        x: usernames.filter((_, i) => unreliable[i]),
+                        y: reposts.filter((_, i) => unreliable[i]),
+                        mode: 'markers',
+                        marker: { color: 'red' },
+                        name: 'Unreliable'
+                    };
+
+                    const traceReliable = {
+                        x: usernames.filter((_, i) => !unreliable[i]),
+                        y: reposts.filter((_, i) => !unreliable[i]),
+                        mode: 'markers',
+                        marker: { color: 'blue' },
+                        name: 'Reliable'
+                    };
+
+                    const layout = {
+                        title: 'Unreliable Users Highlighted',
+                        xaxis: {
+                            title: 'Different Sources of Media',
+                            tickangle: 90,
+                            color: 'white' // X-axis text color
+                        },
+                        yaxis: {
+                            title: 'Reposts',
+                            color: 'white' // Y-axis text color
+                        },
+                        plot_bgcolor: 'black',  // Set background color of the plot
+                        paper_bgcolor: 'black', // Set background color of the paper (around the plot)
+                        font: {
+                            color: 'white' // Text color of the plot
+                        },
+                        shapes: [
+                            {
+                                type: 'line',
+                                x0: 0,
+                                x1: 1,
+                                xref: 'paper',
+                                y0: lowerBound,
+                                y1: lowerBound,
+                                line: {
+                                    color: 'red',
+                                    width: 2,
+                                    dash: 'dash'
+                                }
+                            },
+                            {
+                                type: 'line',
+                                x0: 0,
+                                x1: 1,
+                                xref: 'paper',
+                                y0: upperBound,
+                                y1: upperBound,
+                                line: {
+                                    color: 'red',
+                                    width: 2,
+                                    dash: 'dash'
+                                }
+                            }
+                        ],
+                        margin: {
+                            l: 50,
+                            r: 50,
+                            b: 150,
+                            t: 80,
+                            pad: 4
+                        },
+                        border: {
+                            color: 'white',
+                            width: 2
+                        }
+                    };
+
+                    Plotly.newPlot('scatter-plot-div', [traceReliable, traceUnreliable], layout);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+
+
+    </script>
+</body>
+
+{% endblock %}

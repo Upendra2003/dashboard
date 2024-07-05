@@ -1,0 +1,40 @@
+.home-section{
+    margin: 60px;
+}
+
+.first{
+    background-color: whitesmoke;
+    color: black;
+    outline: none;
+    border: none;
+    font-style: italic;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.image-analysis{
+    margin: 15px;
+}
+
+.section-one{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.image img{
+    width: 300px;
+}
+
+.charts{
+    margin-top: 50px;
+    display: flex;
+}
+
+.graph-head{
+    text-align: center;
+    margin: 80px 0px;
+}
+
+.graph-head h1{
+    padding: 10px;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard●</title>
+    <link rel="stylesheet" href="static/css/base_style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="/">dashboard●</a>
+        </div>
+        <div class="nav-links">
+            <ul>
+                <li><a href="/analyze-likes">Analyze Likes</a></li>
+                <li><a href="/analyze-comments">Analyze Comments</a></li>
+                <li><a href="/analyze-repost">Analyze Reposts</a></li>
+            </ul>
+        </div>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Example: Calculate and display average likes dynamically
+        const likesData = [120, 80, 150, 90, 200]; // Replace with your fetched data
+        const averageLikes = likesData.reduce((acc, curr) => acc + curr, 0) / likesData.length;
+        document.getElementById('averageLikes').textContent = averageLikes.toFixed(2); // Display average likes
+    });
+
+    const burger = document.querySelector('.burger');
+    const navLinks = document.querySelector('.nav-links');
+
+    burger.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+        burger.classList.toggle('active');
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="static/css/index_style.css">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<div class="home-section">
+    <div class="section-one">
+        <div class="first">
+            <h1>Uncovering Insights from Media Engagement</h1>
+            <p>During this project I went on a very significant journey through the universe of media engagement metrics, which revealed important insights into how news content operates in relation to audience behavior, armed only with Selenium and Beautiful Soup. This involved cloaking oneself in an in-depth understanding of web scraping complexities by traversing through Threads.net to assemble datasets with a substantial amount of information. Automating login processes together with data extraction formed the first steps before making a more thorough analysis.</p>
+        </div>
+    </div>
+    <div class="section-one">
+        <div class="image">
+            <img src="../static/images/threads.png" alt="">
+        </div>
+        <div class="first">
+            <h1>Data Collection: Scraping from Threads.net</h1>
+            <p>I began by harnessing the power of Selenium and Beautiful Soup to scrape data from Threads.net, automating the login processes to extract relevant data efficiently. This initial step involved writing code that seamlessly entered the username and password, allowing access to the site for further data collection. By navigating to the accounts of various news providers, I gathered a wealth of information, which was then stored in a DataFrame and converted into a CSV file for subsequent analysis. This meticulous process ensured that I had a robust dataset to work with, setting the foundation for a thorough examination of media engagement metrics.</p>
+        </div>
+    </div>
+    <div class="section-one">
+        <div class="first">
+            <h1>Automating Data Collection from Unreliable News Providers</h1>
+            <p>Using the list of unreliable news providers from the Iffy.news dashboard, I developed Python scripts to automatically gather data from these sources post-login. This streamlined approach involved writing code that navigated to the specified news provider accounts after logging in, efficiently collecting the necessary data. This method ensured comprehensive data acquisition, allowing for a thorough analysis of engagement metrics across various unreliable sources.</p>
+        </div>
+        <div class="image-news">
+            <img src="../static/images/news.png" width="150px" alt="">
+        </div>
+    </div>
+    <div class="section-one">
+        <div class="image-analysis">
+            <img src="../static/images/analysis.png" width="100px" alt="">
+        </div>
+        <div class="first">
+            <h1>Data Processing and Analysis</h1>
+            <p>After collecting the data, I structured it into a DataFrame and converted it into a CSV file for detailed analysis. This step was crucial as it organized the raw data into a manageable format, laying the foundation for deriving meaningful insights and enabling systematic examination of engagement metrics.</p>
+        </div> 
+    </div>
+    <div class="section-one">
+        <div class="first">
+            <h1>Analyzing Engagement Metrics</h1>
+            <p>I began by analyzing likes across posts, leveraging histograms and box plots to visualize engagement patterns. This exploration provided clarity on audience interaction levels, revealing typical engagement ranges and highlighting outliers, thereby offering a deeper understanding of how different posts resonated with the audience.</p>
+        </div> 
+        <div class="image-analysis">
+            <img src="../static/images/like.png" width="100px" alt="">
+        </div>
+    </div>
+    <div class="section-one">
+        <div class="image-analysis">
+            <img src="../static/images/insights.png" width="100px" alt="">
+        </div>
+        <div class="first">
+            <h1>Insights from Comments and Reposts</h1>
+            <p>Delving deeper, I explored the comments and reposts sections. It became evident that while many users engaged through likes, discussions in the comments and reposts were limited. This observation highlighted a significant trend: although users showed interest in the content by liking it, they were less inclined to engage in conversations or share the content further.
+            </p>
+        </div> 
+    </div>
+    <div class="section-one">
+        <div class="first">
+            <h1>Identifying Unreliable News Providers</h1>
+            <p>By scrutinizing likes, comments, and reposts data, I identified unreliable news providers based on lower engagement metrics. Conversely, reliable sources emerged, marked by consistent audience interaction. This distinction between reliable and unreliable providers offered a clearer picture of how different news sources resonated with their audiences.
+            </p>
+        </div> 
+        <div class="image-analysis">
+            <img src="../static/images/fake.png" width="100px" alt="">
+        </div>
+    </div>
+    <div class="section-one">
+        <div class="image-analysis">
+            <img src="../static/images/done.jpg" width="100px" alt="">
+        </div>
+        <div class="first">
+            <h1>Project Conclusion</h1>
+            <p>In conclusion, this project provided valuable insights into media engagement behaviors and the credibility of news providers. By automating data collection and employing robust analytical tools, I gained a deeper understanding of audience preferences and engagement patterns.
+            </p>
+        </div>
+    </div>
+    <div class="graph-head">
+        <hr>
+        <h1>Graphs</h1>
+        <hr>
+    </div>
+    <div class="charts">
+        <div id="pie-chart-div" style="width:600px;height:400px;"></div>
+        <div id="bar-chart" style="width:600px;height:400px;"></div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+                fetch('/api/pie-chart-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        const likes = data.Likes;
+                        const comments = data.Comments;
+                        const reposts = data.Reposts;
+
+                        const trace = {
+                            values: [likes, comments, reposts],
+                            labels: ['Likes', 'Comments', 'Reposts'],
+                            type: 'pie',
+                            textinfo: 'label+percent',
+                            insidetextorientation: 'radial'
+                        };
+
+                        const layout = {
+                            title: 'Engagement Distribution: Likes, Comments, and Reposts',
+                            plot_bgcolor: 'black',
+                            paper_bgcolor: 'black',
+                            font: {
+                                color: 'white'
+                            },
+                            margin: {
+                                l: 20,
+                                r: 20,
+                                t: 50,
+                                b: 20
+                            }
+                        };
+
+                        Plotly.newPlot('pie-chart-div', [trace], layout);
+                    })
+                    .catch(error => console.error('Error fetching pie chart data:', error));
+            });
+            document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/bar-chart-data')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Bar chart data:', data);
+
+                    const categories = data.categories;
+                    const values = data.values;
+                    const colors = data.colors;
+
+                    const trace = {
+                        x: categories,
+                        y: values,
+                        type: 'bar',
+                        marker: {
+                            color: colors
+                        }
+                    };
+
+                    const layout = {
+                        title: 'Average Metrics Comparison',
+                        xaxis: { title: 'Metrics' },
+                        yaxis: { title: 'Average Values' },
+                        plot_bgcolor: 'black',  
+                        paper_bgcolor: 'black', 
+                        font: {
+                            color: 'white'       
+                        }
+                    };
+
+                    Plotly.newPlot('bar-chart', [trace], layout);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+</script>
+
+{% endblock %}
